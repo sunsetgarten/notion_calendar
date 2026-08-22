@@ -94,14 +94,39 @@
 
     flex-direction: column;
 
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
 
-    gap: 6px;
+    gap: 4px;
 
     width: 100%;
 
     margin-bottom: 13px;
+  }
+
+
+  /* ==============================
+     Header Spacer
+     (keeps room clear of Notion's
+     block hover controls)
+  ============================== */
+
+  .header-spacer {
+    visibility: hidden;
+  }
+
+
+  /* ==============================
+     Header Row
+  ============================== */
+
+  .header-row {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
   }
 
 
@@ -348,34 +373,42 @@
 
   <div class="header">
 
-    <div
-      class="month-year"
-      id="monthYear">
+    <div class="header-spacer month-year">
       2026 August
     </div>
 
+    <div class="header-row">
 
-    <div class="navigation">
+      <div
+        class="month-year"
+        id="monthYear">
+        2026 August
+      </div>
 
-      <button
-        class="nav-btn"
-        id="prevMonth"
-        aria-label="Previous month">
-        ‹
-      </button>
 
-      <button
-        class="today-btn"
-        id="todayButton">
-        Today
-      </button>
+      <div class="navigation">
 
-      <button
-        class="nav-btn"
-        id="nextMonth"
-        aria-label="Next month">
-        ›
-      </button>
+        <button
+          class="nav-btn"
+          id="prevMonth"
+          aria-label="Previous month">
+          ‹
+        </button>
+
+        <button
+          class="today-btn"
+          id="todayButton">
+          Today
+        </button>
+
+        <button
+          class="nav-btn"
+          id="nextMonth"
+          aria-label="Next month">
+          ›
+        </button>
+
+      </div>
 
     </div>
 
