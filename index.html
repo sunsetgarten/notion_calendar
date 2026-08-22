@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Calendar</title>
+
+<style>
+
+  :root {
+    --bg-color: #f1f1ef;
+    --text-color: #37352f;
+    --secondary-text: #787774;
+
+    --today-bg: #e5e5e3;
+    --today-text: #37352f;
+
+    --hover-bg: rgba(55, 53, 47, 0.07);
+  }
+
+
+  /* ==============================
+     Dark Mode
+  ============================== */
+
+  @media (prefers-color-scheme: dark) {
+
+    :root {
+      --bg-color: #191919;
+      --text-color: rgba(255, 255, 255, 0.81);
+      --secondary-text: rgba(255, 255, 255, 0.45);
+
+      /* --today-bg / --today-text intentionally NOT overridden here,
+         so the Today badge + date circle always keep the original
+         light-gray look (#e5e5e3 / #37352f) in both light and dark mode */
+
+      --hover-bg: rgba(255, 255, 255, 0.07);
+    }
+
+  }
+
+
+  /* ==============================
+     Base
+  ============================== */
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    background: transparent;
+  }
+
+  body {
+    margin: 0;
+    padding: 12px;
+
+    background: transparent;
+    color: var(--text-color);
+
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      Helvetica,
+      Arial,
+      sans-serif;
+
+    user-select: none;
+  }
+
+
+  /* ==============================
+     Calendar Container
+  ============================== */
+
+  .calendar-container {
+    width: 100%;
+    max-width: 300px;
+
+    margin: 0 auto;
+  }
+
+
+  /* ==============================
+     Header
+  ============================== */
+
+  .header {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    width: 100%;
+
+    margin-bottom: 13px;
+  }
+
+
+  /* ==============================
+     Month / Year
+  ============================== */
+
+  .month-year {
+    font-size: 13px;
+    font-weight: 600;
+
+    letter-spacing: -0.1px;
+
+    color: var(--text-color);
+
+    white-space: nowrap;
+  }
+
+
+  /* ==============================
+     Navigation
+  ============================== */
+
+  .navigation {
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 2px;
+  }
+
+
+  /* Previous / Next */
+
+  .nav-btn {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 23px;
+    height: 23px;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 5px;
+
+    background: transparent;
+    color: var(--secondary-text);
+
+    font-family: inherit;
+    font-size: 15px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .nav-btn:hover {
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+  }
+
+
+  /* ==============================
+     Today
+  ============================== */
+
+  .today-btn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    height: 22px;
+
+    padding: 2px 8px;
+
+    border: none;
+    border-radius: 999px;
+
+    background-color: var(--today-bg);
+    color: var(--today-text);
+
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+      background-color 0.15s ease,
+      opacity 0.15s ease;
+  }
+
+  .today-btn:hover {
+    opacity: 0.75;
+  }
+
+
+  /* ==============================
+     Weekdays
+  ============================== */
+
+  .weekdays {
+    display: grid;
+
+    grid-template-columns:
+      repeat(7, 1fr);
+
+    width: 100%;
+
+    text-align: center;
+
+    margin-bottom: 3px;
+  }
+
+  .weekday {
+    font-size: 10px;
+    font-weight: 500;
+
+    color: var(--secondary-text);
+
+    padding-bottom: 5px;
+  }
+
+
+  /* ==============================
+     Calendar Days
+  ============================== */
+
+  .days {
+    display: grid;
+
+    grid-template-columns:
+      repeat(7, 1fr);
+
+    width: 100%;
+
+    text-align: center;
+  }
+
+  .day {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 28px;
+
+    margin: 1px auto;
+
+    border-radius: 50%;
+
+    font-size: 12px;
+    font-weight: 400;
+
+    color: var(--text-color);
+
+    cursor: default;
+
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+
+  /* ==============================
+     Hover
+  ============================== */
+
+  .day:not(.other-month):hover {
+    background-color: var(--hover-bg);
+  }
+
+
+  /* ==============================
+     Other Month
+  ============================== */
+
+  .other-month {
+    color: var(--secondary-text);
+
+    opacity: 0.3;
+  }
+
+
+  /* ==============================
+     Today Date
+  ============================== */
+
+  .day.today {
+    background-color: var(--today-bg);
+    color: var(--today-text);
+
+    font-weight: 600;
+
+    border-radius: 999px;
+  }
+
+
+  /* ==============================
+     Responsive
+  ============================== */
+
+  @media (max-width: 320px) {
+
+    body {
+      padding: 10px;
+    }
+
+    .calendar-container {
+      max-width: 280px;
+    }
+
+    .day {
+      width: 27px;
+      height: 27px;
+
+      font-size: 12px;
+    }
+
+  }
+
+</style>
+</head>
+
+
+<body>
+
+<div class="calendar-container">
+
+
+  <!-- ==============================
+       Header
+  ============================== -->
+
+  <div class="header">
+
+    <div
+      class="month-year"
+      id="monthYear">
+      2026 August
+    </div>
+
+
+    <div class="navigation">
+
+      <button
+        class="nav-btn"
+        id="prevMonth"
+        aria-label="Previous month">
+        ‹
+      </button>
+
+      <button
+        class="today-btn"
+        id="todayButton">
+        Today
+      </button>
+
+      <button
+        class="nav-btn"
+        id="nextMonth"
+        aria-label="Next month">
+        ›
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ==============================
+       Weekdays
+  ============================== -->
+
+  <div class="weekdays">
+
+    <div class="weekday">Sun</div>
+    <div class="weekday">Mon</div>
+    <div class="weekday">Tue</div>
+    <div class="weekday">Wed</div>
+    <div class="weekday">Thu</div>
+    <div class="weekday">Fri</div>
+    <div class="weekday">Sat</div>
+
+  </div>
+
+
+  <!-- ==============================
+       Calendar
+  ============================== -->
+
+  <div
+    class="days"
+    id="calendarDays">
+  </div>
+
+</div>
+
+
+<script>
+
+  /* ==============================
+     Calendar State
+  ============================== */
+
+  const monthNames = [
+
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+
+  ];
+
+
+  const today = new Date();
+
+
+  let currentMonth =
+    today.getMonth();
+
+
+  let currentYear =
+    today.getFullYear();
+
+
+  /* ==============================
+     Render Calendar
+  ============================== */
+
+  function renderCalendar() {
+
+    const monthYear =
+      document.getElementById("monthYear");
+
+
+    const calendarDays =
+      document.getElementById("calendarDays");
+
+
+    /*
+      Year → Month
+    */
+
+    monthYear.textContent =
+      `${currentYear} ${monthNames[currentMonth]}`;
+
+
+    /*
+      Clear calendar
+    */
+
+    calendarDays.innerHTML = "";
+
+
+    /*
+      First day of month
+    */
+
+    const firstDay =
+      new Date(
+        currentYear,
+        currentMonth,
+        1
+      ).getDay();
+
+
+    /*
+      Days in month
+    */
+
+    const daysInMonth =
+      new Date(
+        currentYear,
+        currentMonth + 1,
+        0
+      ).getDate();
+
+
+    /*
+      Days in previous month
+    */
+
+    const daysInPreviousMonth =
+      new Date(
+        currentYear,
+        currentMonth,
+        0
+      ).getDate();
+
+
+    /* ==============================
+       Previous Month
+    ============================== */
+
+    for (
+      let i = firstDay - 1;
+      i >= 0;
+      i--
+    ) {
+
+      const day =
+        document.createElement("div");
+
+
+      day.className =
+        "day other-month";
+
+
+      day.textContent =
+        daysInPreviousMonth - i;
+
+
+      calendarDays.appendChild(day);
+
+    }
+
+
+    /* ==============================
+       Current Month
+    ============================== */
+
+    for (
+      let date = 1;
+      date <= daysInMonth;
+      date++
+    ) {
+
+      const day =
+        document.createElement("div");
+
+
+      day.className =
+        "day";
+
+
+      day.textContent =
+        date;
+
+
+      /*
+        Highlight Today
+      */
+
+      if (
+
+        date === today.getDate() &&
+
+        currentMonth ===
+        today.getMonth() &&
+
+        currentYear ===
+        today.getFullYear()
+
+      ) {
+
+        day.classList.add("today");
+
+      }
+
+
+      calendarDays.appendChild(day);
+
+    }
+
+
+    /* ==============================
+       Next Month
+    ============================== */
+
+    const totalCells =
+      calendarDays.children.length;
+
+
+    const remainingCells =
+      (7 - (totalCells % 7)) % 7;
+
+
+    for (
+      let date = 1;
+      date <= remainingCells;
+      date++
+    ) {
+
+      const day =
+        document.createElement("div");
+
+
+      day.className =
+        "day other-month";
+
+
+      day.textContent =
+        date;
+
+
+      calendarDays.appendChild(day);
+
+    }
+
+  }
+
+
+  /* ==============================
+     Previous Month
+  ============================== */
+
+  document
+    .getElementById("prevMonth")
+    .addEventListener(
+      "click",
+      () => {
+
+        currentMonth--;
+
+
+        if (
+          currentMonth < 0
+        ) {
+
+          currentMonth = 11;
+
+          currentYear--;
+
+        }
+
+
+        renderCalendar();
+
+      }
+    );
+
+
+  /* ==============================
+     Next Month
+  ============================== */
+
+  document
+    .getElementById("nextMonth")
+    .addEventListener(
+      "click",
+      () => {
+
+        currentMonth++;
+
+
+        if (
+          currentMonth > 11
+        ) {
+
+          currentMonth = 0;
+
+          currentYear++;
+
+        }
+
+
+        renderCalendar();
+
+      }
+    );
+
+
+  /* ==============================
+     Today
+  ============================== */
+
+  document
+    .getElementById("todayButton")
+    .addEventListener(
+      "click",
+      () => {
+
+        currentMonth =
+          today.getMonth();
+
+
+        currentYear =
+          today.getFullYear();
+
+
+        renderCalendar();
+
+      }
+    );
+
+
+  /* ==============================
+     Initial Render
+  ============================== */
+
+  renderCalendar();
+
+</script>
+
+</body>
+</html>
